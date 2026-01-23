@@ -1,36 +1,198 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TradeOut - Retro Apple Trade Guessing Game
 
-## Getting Started
+A casual trade-geography guessing game inspired by Tradle, wrapped in a stylized retro Apple (classic Macintosh) UI with cozy, nostalgic game aesthetics.
 
-First, run the development server:
+## 🎮 How to Play
+
+1. You'll see a treemap visualization of a mystery country's export products
+2. Each colored block represents an export product, sized by its share of total exports
+3. Guess which country it is - you have 6 attempts!
+4. After each guess, you'll see:
+   - **Distance**: How far your guess is from the target
+   - **Direction**: Arrow pointing toward the target country
+   - **Proximity %**: Color-coded closeness (red = far, green = close)
+5. Use the clues to narrow down the correct country!
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ installed
+- npm or pnpm
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to play!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎨 Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Custom SVG Treemap**: Hand-built treemap visualization with full styling control
+- **Retro Mac UI**: Classic Macintosh window styling with nostalgic aesthetics
+- **Fuzzy Autocomplete**: Smart country name matching with support for common aliases (USA, UK, etc.)
+- **Geographic Feedback**: Distance, direction, and proximity percentage for each guess
+- **Random Puzzles**: Each game features a different country with no-repeat logic
+- **Sound Effects**: Optional retro Mac-style sounds (muted by default)
+- **Responsive Design**: Works on desktop and mobile (desktop-first)
+- **Pure Client-Side**: No backend required, all data bundled statically
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: Next.js 15 (TypeScript)
+- **Styling**: Tailwind CSS with custom retro theme
+- **UI Components**: Shadcn UI (customized)
+- **Fonts**: VT323 (pixel font for retro aesthetic)
+- **Data**: Static JSON (~100 countries with real export data)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+tradeout/
+├── app/                      # Next.js app directory
+│   ├── layout.tsx           # Root layout with fonts
+│   ├── page.tsx             # Main game page
+│   └── globals.css          # Global styles & retro theme
+├── components/              # React components
+│   ├── DesktopPattern.tsx   # Background pattern
+│   ├── RetroWindow.tsx      # Mac window frame
+│   ├── TitleBar.tsx         # Window title bar
+│   ├── Treemap.tsx          # SVG treemap visualization
+│   ├── GuessInput.tsx       # Input with autocomplete
+│   ├── GuessList.tsx        # Guess history display
+│   └── ...                  # Other game components
+├── hooks/                   # Custom React hooks
+│   ├── useGameState.ts      # Game logic & state
+│   ├── useSounds.ts         # Sound effects
+│   └── useFirstVisit.ts     # First-time help modal
+├── lib/
+│   ├── data/
+│   │   └── countries.ts     # Country export data
+│   └── utils/               # Utility functions
+│       ├── geo.ts           # Distance & direction calculations
+│       ├── fuzzy.ts         # Fuzzy name matching
+│       ├── puzzle.ts        # Random selection logic
+│       └── treemap.ts       # Treemap algorithm
+└── public/
+    └── sounds/              # Sound effect files
+```
 
-## Deploy on Vercel
+## 🎯 Game Mechanics
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **6 Attempts**: You have 6 guesses to identify the country
+- **No-Repeat Logic**: Last 20 countries are excluded from random selection
+- **Proximity Scoring**: Based on geographic distance (20,000km = 0%, 0km = 100%)
+- **8-Direction Compass**: Arrows point N, NE, E, SE, S, SW, W, or NW
+- **Alias Support**: Common abbreviations work (USA, UK, Holland, etc.)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Color Palette
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Cream | #F5F0E8 | Main background |
+| Warm Gray | #D4CFC7 | Panels, cards |
+| Dusty Pink | #E8B4B4 | Treemap (agriculture) |
+| Sage Green | #B8C5B0 | Treemap (food, electronics) |
+| Powder Blue | #B0C9D4 | Treemap (energy) |
+| Warm Sand | #D9C9A8 | Treemap (minerals) |
+
+## 📝 Data Source
+
+Export data sourced from [OEC (Observatory of Economic Complexity)](https://oec.world/), featuring ~100 countries with distinctive export profiles.
+
+## 🔊 Sound Effects
+
+Sound files are located in `public/sounds/`. Replace the placeholder files with actual retro Mac-style sound effects:
+
+- `key-click.mp3` - Typing sound
+- `submit.mp3` - Button press sound
+- `wrong-beep.mp3` - Incorrect guess sound
+- `win-chime.mp3` - Victory sound
+
+Find free sounds at:
+- https://freesound.org/
+- https://pixabay.com/sound-effects/
+- https://mixkit.co/free-sound-effects/
+
+## 🚢 Deployment
+
+This is a static Next.js app that can be deployed to:
+
+- **Vercel** (recommended): `vercel --prod`
+- **Netlify**: Configure as Next.js site
+- **Any static hosting**: `npm run build` → deploy `.next` folder
+
+### Vercel Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+## 🎮 Customization
+
+### Adding Countries
+
+Edit `lib/data/countries.ts` to add more countries. Each country needs:
+
+```typescript
+{
+  name: 'Country Name',
+  iso: 'XX',           // 2-letter ISO code
+  flag: '🇽🇽',          // Flag emoji
+  lat: 0.0,            // Latitude
+  lng: 0.0,            // Longitude
+  aliases: ['...'],    // Alternative names
+  totalExports: 0,     // Total export value (millions USD)
+  exports: [           // Top export products
+    {
+      name: 'Product',
+      value: 0,        // Export value (millions USD)
+      percentage: 0,   // Percentage of total
+      sector: '...'    // Sector category
+    }
+  ]
+}
+```
+
+### Customizing Theme
+
+Edit `tailwind.config.ts` to modify colors, fonts, or spacing. The retro theme colors are defined in the `extend.colors.retro` section.
+
+### Modifying Game Rules
+
+- **Max guesses**: Change `MAX_GUESSES` in `hooks/useGameState.ts`
+- **History size**: Change `MAX_HISTORY` in same file
+- **Min treemap label size**: Edit `minArea` in `lib/utils/treemap.ts`
+
+## 📄 License
+
+This project is open source. Export data is from OEC World under their respective terms.
+
+## 🙏 Credits
+
+- Inspired by [Tradle](https://tradle.net/)
+- Export data from [OEC World](https://oec.world/)
+- Retro Mac UI inspired by classic System 6-9 aesthetics
+
+---
+
+**Enjoy playing TradeOut!** 🌍🎮

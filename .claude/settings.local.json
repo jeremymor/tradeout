@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kill:*)",
+      "Bash(npx create-next-app@latest:*)"
+    ]
+  }
+}

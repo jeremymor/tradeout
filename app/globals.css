@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 30% 95%;
+    --foreground: 0 0% 0%;
+    --card: 40 20% 90%;
+    --card-foreground: 0 0% 0%;
+    --popover: 40 30% 95%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 40 30% 95%;
+    --secondary: 40 10% 80%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 40 10% 85%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 40 10% 85%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 0%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 0%;
+    --radius: 0.3rem;
+  }
+}
+
+/* Retro Mac Cursors */
+@layer base {
+  * {
+    @apply border-border;
+    /* Classic Mac arrow cursor */
+    cursor: url('/cursors/pointer.png') 0 0, auto;
+  }
+  
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    @apply bg-retro-cream text-foreground font-pixel;
+  }
+
+  /* Pointer cursor for interactive elements */
+  a, button, [role="button"], input[type="submit"], input[type="button"],
+  select, .cursor-pointer, [onclick], rect {
+    /* Classic Mac hand cursor */
+    cursor: url('/cursors/hand.png') 6 0, pointer;
+  }
+
+  /* Text cursor for inputs */
+  input[type="text"], input[type="email"], input[type="password"], 
+  input[type="search"], textarea, [contenteditable="true"] {
+    cursor: text;
+  }
+}
+
+/* Retro Mac UI Styles */
+@layer components {
+  .mac-window {
+    @apply border-2 border-black bg-retro-cream shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)];
+  }
+  
+  .mac-title-bar {
+    @apply border-b-2 border-black bg-gradient-to-r from-retro-warmGray via-white to-retro-warmGray;
+    background-image: repeating-linear-gradient(
+      90deg,
+      #D4CFC7 0px,
+      #D4CFC7 1px,
+      #FFFFFF 1px,
+      #FFFFFF 2px
+    );
+  }
+  
+  .mac-button {
+    @apply border border-black rounded bg-retro-warmGray px-4 py-2 font-pixel text-base;
+    box-shadow: 
+      inset 1px 1px 0 rgba(255,255,255,0.6),
+      inset -1px -1px 0 rgba(0,0,0,0.2),
+      1px 1px 2px rgba(0,0,0,0.3);
+  }
+  
+  .mac-button:hover {
+    @apply bg-retro-warmGray brightness-95;
+  }
+  
+  .mac-button:active {
+    box-shadow: 
+      inset -1px -1px 0 rgba(255,255,255,0.6),
+      inset 1px 1px 0 rgba(0,0,0,0.2);
+  }
+  
+  .mac-input {
+    @apply border-2 border-black bg-white px-3 py-2.5 text-base font-pixel;
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .mac-panel {
+    @apply border-2 border-black bg-retro-warmGray p-3;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Pixel confetti animation */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.confetti-pixel {
+  animation: confetti-fall 2s linear forwards;
+}
+
+/* Globe spin animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
