@@ -3,9 +3,6 @@ interface TradeDataIconProps {
 }
 
 export function TradeDataIcon({ size = 48 }: TradeDataIconProps) {
-  // Scale factor based on default size of 48
-  const scale = size / 48;
-  
   return (
     <svg
       width={size}
