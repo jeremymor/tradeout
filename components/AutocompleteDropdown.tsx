@@ -28,9 +28,10 @@ export function AutocompleteDropdown({
   useEffect(() => {
     if (inputRef?.current) {
       const rect = inputRef.current.getBoundingClientRect();
+      // For fixed positioning, use viewport coordinates directly (no scroll offset)
       setPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + 4,
+        left: rect.left,
         width: rect.width,
       });
     }
@@ -48,20 +49,34 @@ export function AutocompleteDropdown({
 
   if (!mounted) return null;
 
+  const handleSelect = (country: Country, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(country);
+  };
+
   const dropdown = (
     <div
       ref={dropdownRef}
-      className="fixed z-[100] max-h-60 overflow-y-auto border-2 border-black bg-white shadow-lg"
+      className="fixed z-[9999] max-h-60 overflow-y-auto border-2 border-black bg-white shadow-lg"
       style={{
         top: position.top,
         left: position.left,
         width: position.width,
       }}
+      onMouseDown={(e) => {
+        // Prevent the input from losing focus when clicking dropdown
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onClick={(e) => e.stopPropagation()}
     >
       {suggestions.map((country, index) => (
         <button
           key={country.iso}
-          onClick={() => onSelect(country)}
+          type="button"
+          onMouseDown={(e) => handleSelect(country, e)}
+          onClick={(e) => e.stopPropagation()}
           className={`w-full px-3 py-2 text-left text-base hover:bg-retro-warmGray ${
             index === selectedIndex ? 'bg-retro-warmGray' : ''
           }`}

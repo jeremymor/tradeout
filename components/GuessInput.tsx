@@ -64,9 +64,9 @@ export function GuessInput({ onSubmit, disabled }: GuessInputProps) {
   };
 
   const handleSelect = (country: Country) => {
+    // Fill the input with the selected country name
     setInput(country.name);
     setShowDropdown(false);
-    setTimeout(() => handleSubmit(), 0);
   };
 
   return (

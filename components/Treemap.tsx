@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Country } from '@/lib/data/countries';
-import { generateTreemap, shouldShowLabel } from '@/lib/utils/treemap';
+import { generateTreemap } from '@/lib/utils/treemap';
 import { getSectorColor } from '@/lib/utils/puzzle';
 import { TreemapTooltip } from './TreemapTooltip';
 
@@ -72,11 +72,26 @@ export function Treemap({ country }: TreemapProps) {
         className="border-2 border-black bg-white"
       >
         {blocks.map((block, index) => {
-          const showFullLabel = shouldShowLabel(block);
-          // Show percentage only for smaller blocks (min area 800px)
-          const showPercentageOnly = !showFullLabel && block.width * block.height >= 800 && block.width >= 40 && block.height >= 25;
           const color = getSectorColor(block.product.sector);
-          const percentage = ((block.product.value / totalValue) * 100).toFixed(1);
+          const percentValue = (block.product.value / totalValue) * 100;
+          const percentage = percentValue >= 10 ? percentValue.toFixed(1) : percentValue.toFixed(2);
+          const area = block.width * block.height;
+          
+          // Determine what labels to show based on block size
+          // Large blocks: show name + large percentage
+          // Medium blocks: show name + smaller percentage  
+          // Small blocks: show percentage only
+          // Tiny blocks: no labels
+          const isLarge = area >= 8000 && block.width >= 120 && block.height >= 80;
+          const isMedium = !isLarge && area >= 3000 && block.width >= 80 && block.height >= 50;
+          const isSmall = !isLarge && !isMedium && area >= 1200 && block.width >= 45 && block.height >= 30;
+          
+          // Calculate font sizes based on block size
+          const nameFontSize = isLarge ? Math.min(28, block.width / 8) : Math.min(16, block.width / 6);
+          const percentFontSize = isLarge ? Math.min(36, block.width / 5) : isMedium ? Math.min(18, block.width / 5) : Math.min(14, block.width / 4);
+          
+          // Padding from edges
+          const padding = 8;
 
           return (
             <g key={index}>
@@ -94,44 +109,80 @@ export function Treemap({ country }: TreemapProps) {
                 onTouchStart={(e) => handleTouchStart(e, index)}
                 className="cursor-pointer transition-opacity"
               />
-              {showFullLabel && (
+              {/* Large blocks: name at top-left, percentage below */}
+              {isLarge && (
                 <>
                   <text
-                    x={block.x + block.width / 2}
-                    y={block.y + block.height / 2 - 12}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize="22"
-                    fill="#000"
+                    x={block.x + padding}
+                    y={block.y + padding + nameFontSize}
+                    textAnchor="start"
+                    dominantBaseline="auto"
+                    fontSize={nameFontSize}
+                    fill="#fff"
                     pointerEvents="none"
-                    className="select-none font-pixel"
+                    className="select-none"
+                    style={{ fontFamily: 'inherit', fontWeight: 500 }}
                   >
                     {block.product.name}
                   </text>
                   <text
-                    x={block.x + block.width / 2}
-                    y={block.y + block.height / 2 + 14}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize="18"
-                    fill="#000"
+                    x={block.x + padding}
+                    y={block.y + padding + nameFontSize + percentFontSize + 4}
+                    textAnchor="start"
+                    dominantBaseline="auto"
+                    fontSize={percentFontSize}
+                    fill="#fff"
                     pointerEvents="none"
-                    className="select-none font-pixel"
+                    className="select-none"
+                    style={{ fontFamily: 'inherit', fontWeight: 400 }}
                   >
                     {percentage}%
                   </text>
                 </>
               )}
-              {showPercentageOnly && (
+              {/* Medium blocks: name and percentage stacked */}
+              {isMedium && (
+                <>
+                  <text
+                    x={block.x + padding}
+                    y={block.y + padding + nameFontSize}
+                    textAnchor="start"
+                    dominantBaseline="auto"
+                    fontSize={nameFontSize}
+                    fill="#fff"
+                    pointerEvents="none"
+                    className="select-none"
+                    style={{ fontFamily: 'inherit', fontWeight: 500 }}
+                  >
+                    {block.product.name.length > 12 ? block.product.name.slice(0, 10) + '...' : block.product.name}
+                  </text>
+                  <text
+                    x={block.x + padding}
+                    y={block.y + padding + nameFontSize + percentFontSize + 2}
+                    textAnchor="start"
+                    dominantBaseline="auto"
+                    fontSize={percentFontSize}
+                    fill="#fff"
+                    pointerEvents="none"
+                    className="select-none"
+                    style={{ fontFamily: 'inherit', fontWeight: 400 }}
+                  >
+                    {percentage}%
+                  </text>
+                </>
+              )}
+              {/* Small blocks: percentage only, centered */}
+              {isSmall && (
                 <text
                   x={block.x + block.width / 2}
                   y={block.y + block.height / 2}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fontSize="12"
-                  fill="#000"
+                  fontSize={percentFontSize}
+                  fill="#fff"
                   pointerEvents="none"
-                  className="select-none font-pixel"
+                  className="select-none"
+                  style={{ fontFamily: 'inherit', fontWeight: 400 }}
                 >
                   {percentage}%
                 </text>

@@ -4,6 +4,7 @@ interface RetroWindowProps {
   children: ReactNode;
   className?: string;
   initialPosition?: { x: number; y: number };
+  initialSize?: { width: number; height: number };
 }
 
 interface Position {
@@ -19,7 +20,7 @@ interface Size {
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 300;
 
-export function RetroWindow({ children, className = '', initialPosition }: RetroWindowProps) {
+export function RetroWindow({ children, className = '', initialPosition, initialSize }: RetroWindowProps) {
   const windowRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<Position | null>(null);
   const [size, setSize] = useState<Size | null>(null);
@@ -33,14 +34,26 @@ export function RetroWindow({ children, className = '', initialPosition }: Retro
   useEffect(() => {
     if (windowRef.current && position === null) {
       const rect = windowRef.current.getBoundingClientRect();
+      
+      // Use initialSize if provided, otherwise use CSS size
+      const newWidth = initialSize?.width || rect.width;
+      const newHeight = initialSize?.height || rect.height;
+      
       if (initialPosition) {
         setPosition(initialPosition);
       } else {
-        setPosition({ x: rect.left, y: rect.top });
+        // Center the window if using initialSize
+        if (initialSize) {
+          const centerX = (window.innerWidth - newWidth) / 2;
+          const centerY = (window.innerHeight - newHeight) / 2;
+          setPosition({ x: Math.max(20, centerX), y: Math.max(20, centerY) });
+        } else {
+          setPosition({ x: rect.left, y: rect.top });
+        }
       }
-      setSize({ width: rect.width, height: rect.height });
+      setSize({ width: newWidth, height: newHeight });
     }
-  }, [position, initialPosition]);
+  }, [position, initialPosition, initialSize]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     // Only start drag from title bar (first child with mac-title-bar class)

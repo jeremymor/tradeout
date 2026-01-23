@@ -7,7 +7,7 @@ import { RetroWindow } from '@/components/RetroWindow';
 import { TitleBar } from '@/components/TitleBar';
 import { Treemap } from '@/components/Treemap';
 import { GuessInput } from '@/components/GuessInput';
-import { GuessList } from '@/components/GuessList';
+import { GuessSlots } from '@/components/GuessSlots';
 import { InfoWindow } from '@/components/InfoWindow';
 import { RevealCard } from '@/components/RevealCard';
 import { PixelConfetti } from '@/components/PixelConfetti';
@@ -17,10 +17,11 @@ import { InfoIcon } from '@/components/icons/InfoIcon';
 import { TradeDataIcon } from '@/components/icons/TradeDataIcon';
 import { TradeDataWindow } from '@/components/TradeDataWindow';
 import { CountryExportWindow } from '@/components/CountryExportWindow';
+import { CongratulationsWindow } from '@/components/CongratulationsWindow';
 import { Country } from '@/lib/data/countries';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-type WindowId = 'game' | 'info' | 'tradeData' | 'countryExport';
+type WindowId = 'game' | 'info' | 'tradeData' | 'countryExport' | 'congratulations';
 
 function formatExportValue(value: number): string {
   if (value >= 1000000) {
@@ -50,12 +51,16 @@ export default function Home() {
     info: false,
     tradeData: false,
     countryExport: false,
+    congratulations: false,
   });
   const [windowOrder, setWindowOrder] = useState<WindowId[]>(['game']);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   
   // State for country export detail window
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  
+  // Track if congratulations was already shown for this game
+  const congratsShownRef = useRef(false);
 
   // Auto-show info on first visit (after loading)
   useEffect(() => {
@@ -64,6 +69,23 @@ export default function Home() {
       setWindowOrder(prev => [...prev.filter(id => id !== 'info'), 'info']);
     }
   }, [isLoading, isFirstVisit]);
+
+  // Auto-show congratulations window when player wins
+  useEffect(() => {
+    if (gameStatus === 'won' && !congratsShownRef.current) {
+      congratsShownRef.current = true;
+      // Small delay for dramatic effect
+      const timer = setTimeout(() => {
+        setOpenWindows(prev => ({ ...prev, congratulations: true }));
+        setWindowOrder(prev => [...prev.filter(id => id !== 'congratulations'), 'congratulations']);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+    // Reset when starting a new game
+    if (gameStatus === 'playing') {
+      congratsShownRef.current = false;
+    }
+  }, [gameStatus]);
 
   const bringToFront = useCallback((windowId: WindowId) => {
     setWindowOrder(prev => [...prev.filter(id => id !== windowId), windowId]);
@@ -167,59 +189,57 @@ export default function Home() {
           style={{ zIndex: getZIndex('game') }}
           onMouseDown={() => bringToFront('game')}
         >
-          <RetroWindow>
+          <RetroWindow initialSize={{ width: 1000, height: 680 }}>
             <TitleBar 
               title="TradeOut"
               onHelpClick={handleHelpOpen} 
               onClose={() => closeWindow('game')}
             />
 
-            <div className="flex-1 space-y-6 overflow-y-auto p-6">
-              {/* Treemap */}
-              <div>
-                <div className="mb-3 flex items-baseline justify-between">
-                  <h2 className="font-pixel text-2xl">
-                    Mystery Country&apos;s Exports
-                  </h2>
-                  <span className="font-pixel text-lg text-gray-600">
-                    Total: {formatExportValue(currentPuzzle.totalExports)}
-                  </span>
-                </div>
-                <Treemap country={currentPuzzle} />
-              </div>
-
-              {/* Guess History */}
-              {guesses.length > 0 && (
-                <div>
-                  <h3 className="mb-3 font-pixel text-xl">Your Guesses</h3>
-                  <GuessList guesses={guesses} />
-                </div>
-              )}
-
-              {/* Game Over / Reveal */}
-              {gameStatus !== 'playing' && (
-                <RevealCard
-                  country={currentPuzzle}
-                  won={gameStatus === 'won'}
-                  onNewGame={startNewGame}
-                />
-              )}
-
-              {/* Input (only show when game is active) */}
-              {gameStatus === 'playing' && (
-                <div>
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-pixel text-xl">Make Your Guess</h3>
-                    <div className="font-pixel text-base text-gray-600">
-                      {remainingGuesses} {remainingGuesses === 1 ? 'guess' : 'guesses'} left
-                    </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <div className="flex gap-4 h-full">
+                {/* Left Column - Treemap (flexible) */}
+                <div className="flex-1 min-w-0">
+                  <div className="mb-2 flex items-baseline justify-between">
+                    <h2 className="font-pixel text-sm">
+                      Mystery Country&apos;s Exports
+                    </h2>
+                    <span className="font-pixel text-xs text-gray-600">
+                      {formatExportValue(currentPuzzle.totalExports)}
+                    </span>
                   </div>
-                  <GuessInput
-                    onSubmit={handleGuessSubmit}
-                    disabled={gameStatus !== 'playing'}
-                  />
+                  <Treemap country={currentPuzzle} />
                 </div>
-              )}
+
+                {/* Right Column - Guesses (fixed width) */}
+                <div className="flex flex-col w-[320px] shrink-0">
+                  <h3 className="mb-2 font-pixel text-sm">Your Guesses</h3>
+                  
+                  {/* 6 Guess Slots */}
+                  <GuessSlots guesses={guesses} maxGuesses={6} />
+
+                  {/* Game Over / Reveal */}
+                  {gameStatus !== 'playing' && (
+                    <div className="mt-3">
+                      <RevealCard
+                        country={currentPuzzle}
+                        won={gameStatus === 'won'}
+                        onNewGame={startNewGame}
+                      />
+                    </div>
+                  )}
+
+                  {/* Input (only show when game is active) */}
+                  {gameStatus === 'playing' && (
+                    <div className="mt-3">
+                      <GuessInput
+                        onSubmit={handleGuessSubmit}
+                        disabled={gameStatus !== 'playing'}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </RetroWindow>
         </div>
@@ -251,6 +271,21 @@ export default function Home() {
           onClose={() => closeWindow('countryExport')}
           onFocus={() => bringToFront('countryExport')}
           zIndex={getZIndex('countryExport')}
+        />
+      )}
+
+      {/* Congratulations Window */}
+      {openWindows.congratulations && currentPuzzle && gameStatus === 'won' && (
+        <CongratulationsWindow
+          country={currentPuzzle}
+          guessCount={guesses.length}
+          onClose={() => closeWindow('congratulations')}
+          onNewGame={() => {
+            closeWindow('congratulations');
+            startNewGame();
+          }}
+          onFocus={() => bringToFront('congratulations')}
+          zIndex={getZIndex('congratulations')}
         />
       )}
     </main>
