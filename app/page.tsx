@@ -38,7 +38,6 @@ export default function Home() {
     currentPuzzle,
     guesses,
     gameStatus,
-    remainingGuesses,
     submitGuess,
     startNewGame,
   } = useGameState();

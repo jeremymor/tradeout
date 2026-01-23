@@ -102,7 +102,7 @@ export function PixelConfetti() {
               width: particle.shape === 'rect' ? `${particle.size}px` : `${particle.size * 0.6}px`,
               height: particle.shape === 'rect' ? `${particle.size * 0.6}px` : `${particle.size}px`,
               animation: `confetti-fall ${particle.fallSpeed}s ease-in-out ${particle.delay}s forwards, confetti-sway ${particle.swaySpeed}s ease-in-out ${particle.delay}s infinite`,
-              // @ts-ignore
+              // @ts-expect-error CSS custom property
               '--sway': `${particle.swayAmplitude}px`,
               boxShadow: `1px 1px 0 rgba(0,0,0,0.2)`,
               transform: `rotate(${particle.rotation}deg)`,
