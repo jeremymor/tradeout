@@ -150,7 +150,7 @@ export function RetroWindow({ children, className = '', initialPosition }: Retro
   return (
     <div
       ref={windowRef}
-      className={`mac-window relative ${position ? '' : 'mx-auto my-8 max-w-5xl'} flex flex-col ${className}`}
+      className={`mac-window relative ${position ? '' : 'mx-auto my-8 max-w-2xl'} flex flex-col ${className}`}
       style={style}
       onMouseDown={handleMouseDown}
     >

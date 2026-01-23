@@ -111,6 +111,55 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* Retro Mac Scrollbars */
+  ::-webkit-scrollbar {
+    width: 16px;
+    height: 16px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #D4CFC7;
+    border-left: 1px solid #000;
+    background-image: repeating-linear-gradient(
+      0deg,
+      #D4CFC7 0px,
+      #D4CFC7 1px,
+      #BFBAB2 1px,
+      #BFBAB2 2px
+    );
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #C8C3BB;
+    border: 1px solid #000;
+    box-shadow: 
+      inset 1px 1px 0 rgba(255,255,255,0.5),
+      inset -1px -1px 0 rgba(0,0,0,0.2);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #BAB5AD;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: #AAA59D;
+    box-shadow: 
+      inset -1px -1px 0 rgba(255,255,255,0.5),
+      inset 1px 1px 0 rgba(0,0,0,0.2);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: #D4CFC7;
+    border-left: 1px solid #000;
+    border-top: 1px solid #000;
+  }
+
+  /* Firefox scrollbar styling */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #C8C3BB #D4CFC7;
+  }
 }
 
 /* Pixel confetti animation */
