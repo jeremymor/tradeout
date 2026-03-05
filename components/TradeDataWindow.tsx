@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from 'react';
 import { RetroWindow } from './RetroWindow';
 import { TitleBar } from './TitleBar';
 import { TradeDataIcon } from './icons/TradeDataIcon';
-import { countries, Country } from '@/lib/data/countries';
+import { countries, dataInfo, Country } from '@/lib/data/countries';
 
 interface TradeDataWindowProps {
   onClose: () => void;
@@ -88,6 +88,12 @@ export function TradeDataWindow({
             <TradeDataIcon size={160} />
             <p className="font-pixel text-sm text-center mt-4 text-gray-600">
               {countries.length} countries
+            </p>
+            <p className="font-pixel text-xs text-center mt-2 text-gray-500">
+              Export data: {dataInfo.dataYear}
+            </p>
+            <p className="font-pixel text-xs text-center mt-1 text-gray-500">
+              Updated: {dataInfo.updatedAt}
             </p>
           </div>
           
